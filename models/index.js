@@ -1,7 +1,11 @@
 var Sequelize = require('sequelize');
 var marked = require('marked');
 
-var db = new Sequelize('postgres://localhost:5432/wikistack', {
+var dbString = 'postgres://localhost:5432/wikistack';
+if(process.env.MODE === 'testing'){
+    dbString = 'postgres://localhost:5432/wikistack-test';
+}
+var db = new Sequelize(dbString, {
     logging: false
 });
 
