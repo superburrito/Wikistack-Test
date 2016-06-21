@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "dependencies": {
     "body-parser": "^1.15.0",
+    "chai-spies": "^0.7.1",
     "express": "^4.13.4",
     "marked": "^0.3.5",
     "morgan": "^1.7.0",
@@ -10,5 +11,12 @@
     "pg-hstore": "^2.3.2",
     "sequelize": "^3.21.0",
     "swig": "^1.4.2"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.5.3"
+  },
+  "scripts": {
+    "test": "mocha"
   }
 }
