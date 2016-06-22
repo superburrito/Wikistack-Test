@@ -5,6 +5,7 @@ var expect = require('chai').expect;
 var chai = require('chai');
 var spies = require('chai-spies');
 var Sequelize = require('sequelize');
+
 chai.use(spies);
 
 /*var db = new Sequelize('postgres://localhost:5432/wikistack-test', {
@@ -118,18 +119,24 @@ describe('page model', function(){
 			it('never gets itself', function(done){
 				newPage.findSimilar()
 				.then(function(result){
-					var index = result.indexOf(newPage);
-					expect(index).to.equal(-1);
-				});
+					var ctr = 0;
+					for(var i = 0; i < result.length; i++){
+						if(result[i].id == newPage.id) ctr++;
+					}
+					expect(ctr).to.equal(0);
 				done();
+				});
 			});
 			it('gets other pages with any common tags', function(done){
 				newPage.findSimilar()
 				.then(function(result){
-					var index = result.indexOf(newPage2);
-					expect(index).to.not.equal(-1);
+					var ctr = 0;
+					for(var i = 0; i < result.length; i++){
+						if(result[i].id == newPage2.id) ctr++;
+					}
+					expect(ctr).to.not.equal(0);
+					done();
 				});
-				done();
 			});
 		});
 	});
@@ -147,13 +154,36 @@ describe('page model', function(){
 			done();
 		});
 		it('returns truthy error when page is invalid', function(done){
-			brokenPage.save().then(function(err){
-					if(err){
-						console.log(err);
-						expect(err).to.be.true;
-					}
-					done();
-				});
+			brokenPage.save().catch(function(err){
+				if(err){
+					expect(err).to.exist;
+				}
+				done();
+			});
 		});
 	});
+
+	describe('Hooks: Before Validate', function(){
+		var newPage;
+		before(function(){
+			newPage = Page.build({
+				title: 'exampleTitle',
+				content: 'exampleContent',
+				status: 'open',
+				date: new Date(),
+				tags: ['tag1', 'tag2']
+			});
+		});
+		it('will not create a urlTitle if not invoked', function(done){
+			expect(newPage.urlTitle).to.equal(undefined);
+			done();
+		});
+		it('creates a urlTitle before validation', function(done){
+			newPage.save().then(function(result){			
+			expect(result.urlTitle).to.not.equal(undefined);
+			done();
+			});
+		});
+	});
+
 });
